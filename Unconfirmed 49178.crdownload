@@ -1,0 +1,33 @@
+import rospy
+from std_msgs.msg import String
+
+def navigation():
+    # Initialize the ROS node
+    rospy.init_node('navigation', anonymous=True)
+
+    # Create subscribers for the sensor data
+    rospy.Subscriber('sensor_data', String, ir_callback)
+    
+
+    # Set the loop rate (in Hz)
+    rate = rospy.Rate(10)
+
+    while not rospy.is_shutdown():
+        # Perform navigation based on the sensor data
+        # Replace this with your navigation code
+        rospy.loginfo('Performing navigation...')
+
+        # Sleep to maintain the loop rate
+        rate.sleep()
+
+def ir_callback(data):
+    # This function will be called when new IR sensor data is received
+    ir_data = data.data
+    rospy.loginfo('Received IR sensor data:', ir_data)
+
+
+if _name_ == '_main_':
+    try:S
+        navigation()
+    except rospy.ROSInterruptException:
+        pass

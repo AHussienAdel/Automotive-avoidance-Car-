@@ -1,0 +1,57 @@
+
+#!license removed for brevity
+import rclpy
+from rclpy.node import Node
+
+import RPi.GPIO as GPIO
+import time
+sensor_right =16           #if pin 16 it would mean GPIO 23       18-> 24 GPIO
+sensor_left=18
+sensor_middle=11
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+GPIO.setup (sensor_left,GPIO.IN)
+GPIO.setup (sensor_right,GPIO.IN)
+GPIO.setup (sensor_middle,GPIO.IN)
+from std_msgs.msg import String
+
+
+		
+class NavigationRobot(Node):
+
+	def __init__(self):
+		super().__init__('publisher_ir_node')
+		self.ir_publisher = self.create_publisher(String, 'publisher_ir', 10)
+		timer_period = 0.5  # seconds
+		self.timer = self.create_timer(timer_period, self.timer_callback)
+	def timer_callback(self):
+		ir_data= self.read_ir_sensor()
+		msg=String()
+		msg.data=ir_data
+		self.get_logger().info('Publishing: "%s"' % msg.data)
+		self.ir_publisher.publish(msg)
+	def read_ir_sensor(self):
+		if GPIO.input(sensor_right) and GPIO.input(sensor_middle):
+			return "move_right"
+		elif GPIO.input(sensor_left)and GPIO.input(sensor_middle):
+			return "move_left"
+		elif GPIO.input(sensor_left)==False and GPIO.input(sensor_right)==False:
+			return "forward"
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    publish1 = NavigationRobot()
+
+    rclpy.spin(publish1)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+    minimal_publisher.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+
